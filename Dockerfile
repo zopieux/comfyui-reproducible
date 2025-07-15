@@ -81,30 +81,41 @@ RUN
 RUN
   mkdir -p /ComfyUI/user/default/ComfyUI-Manager
   && printf '[default]\nnetwork_mode = offline\nuse_uv = true\n' > /ComfyUI/user/default/ComfyUI-Manager/config.ini
-  && cmcli install --exit-on-fail
+
+RUN cmcli install --exit-on-fail comfyui_tensorrt
+
+RUN cmcli install --exit-on-fail ComfyUI-segment-anything-2
+
+RUN cmcli install --exit-on-fail comfyui-impact-pack
+
+RUN
+  cmcli install --exit-on-fail
+    cg-image-filter
     ComfyMath
     comfyui_controlnet_aux
     comfyui_essentials
     ComfyUI_IPAdapter_plus
     comfyui_layerstyle
     ComfyUI_LayerStyle_Advance
-    comfyui_tensorrt
     ComfyUI_UltimateSDUpscale
     comfyui-advancedliveportrait
     ComfyUI-Chibi-Nodes
     ComfyUI-Crystools
     comfyui-custom-scripts
-    comfyui-impact-pack
     comfyui-impact-subpack
     comfyui-inspire-pack
     comfyui-kjnodes
     comfyui-layerdiffuse
+    comfyui-mxtoolkit
     ComfyUI-nunchaku
-    ComfyUI-segment-anything-2
+    comfyui-portrait-master
     comfyui-various
     comfyui-wd14-tagger
     efficiency-nodes-comfyui
     https://github.com/laksjdjf/Batch-Condition-ComfyUI
+    https://github.com/zopieux/ComfyUI-Liebs-Picker
+    https://github.com/zopieux/ComfyUI-Ollama
+    https://github.com/zopieux/ComfyUI-Prompt-Stash
     https://github.com/zopieux/ComfyUI-zopi
     rgthree-comfy
     was-node-suite-comfyui

@@ -3,11 +3,11 @@
 
 set -Eeuo pipefail
 
-DEFAULT=(pyrun /ComfyUI/main.py --listen --port 7860 --preview-method auto --verbose WARNING)
+DEFAULT=(pyrun /ComfyUI/main.py --listen --port 7860 --preview-method auto --verbose INFO)
 
 (( $# == 0 )) && set -- "${DEFAULT[@]}"
 
-mkdir -p /tmp/comfy-output
+mkdir -p "$COMFY_OUTPUT_DIR"
 
 podman run -ti --rm -p 7860:7860 --device nvidia.com/gpu=all \
   -v "$MODELS_HOST_DIR:/ComfyUI/models:O" \

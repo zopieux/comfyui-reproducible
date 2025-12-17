@@ -18,5 +18,6 @@ podman run -ti --rm -p 7860:7860 --device nvidia.com/gpu=all \
   "$IMAGE_NAME" \
   "$@"
 
+# -v "/home/alex/dev/ml/ComfyUI-zopi:/ComfyUI/custom_nodes/comfyui-zopi:ro" \
 # -v /tmp/touched:/tmp/touched:rw \
 # strace -f -e file -o /tmp/touched uv run --python /venv \

@@ -17,11 +17,11 @@ FROM nvidia/cuda:${CUDA_IMAGE}
 
 ARG
   PYTHON_VERSION=3.12
-  COMFYUI_VERSION=0.3.44
-  NUNCHAKU_VERSION=0.3.1
-  TORCH_VERSION=2.7
-  TORCHVISION_VERSION=0.22
-  TORCHAUDIO_VERSION=2.7
+  COMFYUI_VERSION=0.3.76
+  NUNCHAKU_VERSION=1.0.1
+  TORCH_VERSION=2.8
+  TORCHVISION_VERSION=0.23
+  TORCHAUDIO_VERSION=2.8
 
 ENV
   DEBIAN_FRONTEND=noninteractive
@@ -41,7 +41,8 @@ RUN
   --mount=target=/var/lib/apt/lists,type=cache,sharing=locked
   --mount=target=/var/cache/apt,type=cache,sharing=locked
   apt-get update -yqq
-  && apt-get install -y --no-install-recommends build-essential ca-certificates ninja-build strace ncdu curl g++-11 gcc-11 git ibverbs-providers libgl1 libglib2.0-bin libibumad3 libibverbs1 libibverbs-dev libnl-3-200 libnl-route-3-200 librdmacm1 ncdu python${PYTHON_VERSION}-dev software-properties-common tzdata wget
+  && apt-get install -y --no-install-recommends build-essential pkg-config cmake-data ca-certificates ninja-build strace ncdu curl g++-11 gcc-11 git ibverbs-providers libcairo2 libcairo2-dev libgl1 libglib2.0-bin libibumad3 libibverbs1 libibverbs-dev libnl-3-200 libnl-route-3-200 librdmacm1 ncdu python${PYTHON_VERSION}-dev software-properties-common tzdata wget
+  && apt-get install -y --no-install-recommends libde265-dev libdjvulibre-dev libfftw3-dev libghc-bzlib-dev libgoogle-perftools-dev libgraphviz-dev libmagickwand-dev libgs-dev libheif-dev libjbig-dev libjemalloc-dev libjpeg-dev liblcms2-dev liblqr-1-0-dev liblzma-dev libopenexr-dev libpango1.0-dev libraqm-dev libraw-dev libtiff-dev libwebp-dev libwmf-dev libzip-dev libzstd-dev
   && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-11 1
   && update-alternatives --set gcc /usr/bin/gcc-11
   && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-11 1
@@ -72,7 +73,7 @@ RUN
   && pyinstall --index-url https://download.pytorch.org/whl/cu${CUDAV}
     torch==${TORCH_VERSION} torchvision==${TORCHVISION_VERSION} torchaudio==${TORCHAUDIO_VERSION}
   && pyinstall numpy ninja diffusers transformers accelerate sentencepiece protobuf huggingface_hub onnxruntime onnxruntime-gpu
-  && pyinstall "https://huggingface.co/mit-han-lab/nunchaku/resolve/main/nunchaku-${NUNCHAKU_VERSION}%2Btorch${TORCH_VERSION}-cp${PYV}-cp${PYV}-linux_x86_64.whl?download=true"
+  && pyinstall "https://huggingface.co/nunchaku-tech/nunchaku/resolve/main/nunchaku-${NUNCHAKU_VERSION}%2Btorch${TORCH_VERSION}-cp${PYV}-cp${PYV}-linux_x86_64.whl?download=true"
 
 RUN
   git clone --depth=1 --branch=v${COMFYUI_VERSION} https://github.com/comfyanonymous/ComfyUI /ComfyUI
@@ -82,8 +83,8 @@ RUN
     -r /ComfyUI/custom_nodes/ComfyUI-Manager/requirements.txt
 
 RUN
-  mkdir -p /ComfyUI/user/default/ComfyUI-Manager
-  && printf '[default]\nnetwork_mode = offline\nuse_uv = true\n' > /ComfyUI/user/default/ComfyUI-Manager/config.ini
+  mkdir -p /ComfyUI/user/__manager
+  && printf '[default]\nnetwork_mode = offline\nuse_uv = true\n' > /ComfyUI/user/__manager/config.ini
 
 RUN timeout 30 bash -c 'pyrun /ComfyUI/main.py --preview-method auto --verbose INFO 2>&1 | tee /tmp/start & CMD_PID=$!; (tail -f -n +1 /tmp/start &) | grep -q "To see the GUI" && pkill -P $$ && exit 0; wait $CMD_PID'
 
@@ -91,6 +92,7 @@ COPY ./node_install.py /
 
 RUN
   pyrun ./node_install.py
+    A8R8_ComfyUI_nodes
     cg-image-filter
     cg-use-everywhere
     ComfyMath
@@ -105,15 +107,18 @@ RUN
     ComfyUI-Chibi-Nodes
     ComfyUI-Crystools
     comfyui-custom-scripts
+    ComfyUI-GGUF
     comfyui-impact-pack
     comfyui-impact-subpack
     comfyui-inspire-pack
     comfyui-kjnodes
     comfyui-layerdiffuse
+    ComfyUI-MagickWand
     comfyui-mxtoolkit
     ComfyUI-nunchaku
     comfyui-portrait-master
     ComfyUI-segment-anything-2
+    ComfyUI-Simple_Readable_Metadata-SG
     ComfyUI-SUPIR
     comfyui-various
     comfyui-wd14-tagger
@@ -123,11 +128,13 @@ RUN
     https://github.com/zopieux/ComfyUI-Ollama
     https://github.com/zopieux/ComfyUI-Prompt-Stash
     https://github.com/zopieux/ComfyUI-zopi
+    RES4LYF
     rgthree-comfy
     was-node-suite-comfyui
+    x-flux-comfyui
 
 # No idea why pip is needed, but uv doesn't do the right thing.
-RUN pyrun python -m pip install -I onnxruntime-gpu opencv-contrib-python
+RUN pyrun python -m pip install -I onnxruntime-gpu opencv-contrib-python soundfile 'wand<0.6'
 
 COPY ./paths_to_delete ./unfuck.sh /
 

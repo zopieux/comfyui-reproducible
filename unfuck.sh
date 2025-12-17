@@ -10,4 +10,6 @@ sed -i '/security_check/d' /ComfyUI/custom_nodes/ComfyUI-Manager/prestartup_scri
 
 # Shut up.
 sed -i 's/warning("No target revision/debug("No target revision/' /ComfyUI/app/database/db.py
+# Remove when nvidia ubuntu image contains ImageMagick ≥.0
+sed -i '/DESCRIPTION = Image./d' /ComfyUI/custom_nodes/ComfyUI-MagickWand/nodes.py
 sed -i '/www.instagram.com/d' /ComfyUI/custom_nodes/ComfyUI-Crystools/nodes/image.py

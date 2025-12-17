@@ -72,7 +72,7 @@ def load_fucked_up_registry() -> dict:
         nodes = json.load(f)["custom_nodes"]
 
     def generate_ids(node: dict):
-        for f in node["files"]:
+        for f in node.get("files", []):
             f: str
             if "github.com" in f and not f.endswith(".py") and not f.endswith(".js"):
                 yield Path(f).stem

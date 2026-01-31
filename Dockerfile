@@ -17,11 +17,6 @@ FROM nvidia/cuda:${CUDA_IMAGE}
 
 ARG
   PYTHON_VERSION=3.12
-  COMFYUI_VERSION=0.3.76
-  NUNCHAKU_VERSION=1.0.1
-  TORCH_VERSION=2.8
-  TORCHVISION_VERSION=0.23
-  TORCHAUDIO_VERSION=2.8
 
 ENV
   DEBIAN_FRONTEND=noninteractive
@@ -55,6 +50,13 @@ RUN
   && chmod +x /root/.local/bin/gitcache
   && ln -s /root/.local/bin/gitcache /root/.local/bin/git
 
+ARG
+  COMFYUI_VERSION=0.11.1
+  NUNCHAKU_VERSION=1.2.1
+  TORCH_VERSION=2.8
+  TORCHVISION_VERSION=0.23
+  TORCHAUDIO_VERSION=2.8
+
 RUN
   curl -LsSf https://astral.sh/uv/install.sh | sh
   && uv venv --python ${PYTHON_VERSION} --seed ${VENV}
@@ -73,7 +75,7 @@ RUN
   && pyinstall --index-url https://download.pytorch.org/whl/cu${CUDAV}
     torch==${TORCH_VERSION} torchvision==${TORCHVISION_VERSION} torchaudio==${TORCHAUDIO_VERSION}
   && pyinstall numpy ninja diffusers transformers accelerate sentencepiece protobuf huggingface_hub onnxruntime onnxruntime-gpu
-  && pyinstall "https://huggingface.co/nunchaku-tech/nunchaku/resolve/main/nunchaku-${NUNCHAKU_VERSION}%2Btorch${TORCH_VERSION}-cp${PYV}-cp${PYV}-linux_x86_64.whl?download=true"
+  && pyinstall "https://github.com/nunchaku-ai/nunchaku/releases/download/v${NUNCHAKU_VERSION}/nunchaku-${NUNCHAKU_VERSION}+cu12.8torch${TORCH_VERSION}-cp${PYV}-cp${PYV}-linux_x86_64.whl"
 
 RUN
   git clone --depth=1 --branch=v${COMFYUI_VERSION} https://github.com/comfyanonymous/ComfyUI /ComfyUI
@@ -124,6 +126,7 @@ RUN
     comfyui-wd14-tagger
     efficiency-nodes-comfyui
     https://github.com/laksjdjf/Batch-Condition-ComfyUI
+    https://github.com/silveroxides/ComfyUI_SigmoidOffsetScheduler
     https://github.com/zopieux/ComfyUI-Liebs-Picker
     https://github.com/zopieux/ComfyUI-Ollama
     https://github.com/zopieux/ComfyUI-Prompt-Stash
@@ -134,7 +137,7 @@ RUN
     x-flux-comfyui
 
 # No idea why pip is needed, but uv doesn't do the right thing.
-RUN pyrun python -m pip install -I onnxruntime-gpu opencv-contrib-python soundfile 'wand<0.6'
+RUN pyrun python -m pip install -I onnxruntime-gpu opencv-contrib-python soundfile 'wand<0.6' 'numpy<=2.3'
 
 COPY ./paths_to_delete ./unfuck.sh /
 

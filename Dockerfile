@@ -125,7 +125,9 @@ RUN
     comfyui-various
     comfyui-wd14-tagger
     efficiency-nodes-comfyui
+    https://github.com/ChangeTheConstants/SeedVarianceEnhancer
     https://github.com/laksjdjf/Batch-Condition-ComfyUI
+    https://github.com/scraed/LanPaint
     https://github.com/silveroxides/ComfyUI_SigmoidOffsetScheduler
     https://github.com/zopieux/ComfyUI-Liebs-Picker
     https://github.com/zopieux/ComfyUI-Ollama
